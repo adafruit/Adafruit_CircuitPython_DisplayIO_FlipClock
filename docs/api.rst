@@ -6,3 +6,9 @@
 
 .. automodule:: adafruit_displayio_flipclock
     :members:
+
+.. automodule:: adafruit_displayio_flipclock.flip_digit
+   :members:
+
+.. automodule:: adafruit_displayio_flipclock.flip_clock
+   :members:

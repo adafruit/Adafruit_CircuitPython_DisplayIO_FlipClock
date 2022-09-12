@@ -36,6 +36,7 @@ This driver depends on:
 This command can be used to install the PaletteFader:
 
 .. code-block:: shell
+
     circup install cedargrove_palettefader
 
 Please ensure all dependencies are available on the CircuitPython filesystem.
@@ -44,16 +45,10 @@ This is easily achieved by downloading
 or individual libraries can be installed using
 `circup <https://github.com/adafruit/circup>`_.
 
-.. todo:: Describe the Adafruit product this library works with. For PCBs, you can also add the
-image from the assets folder in the PCB's GitHub repo.
+`Purchase Feather ESP32-S2 TFT from the Adafruit shop <https://www.adafruit.com/product/5300/>`_
 
-`Purchase one from the Adafruit shop <http://www.adafruit.com/products/>`_
 Installing from PyPI
 =====================
-.. note:: This library is not available on PyPI yet. Install documentation is included
-   as a standard element. Stay tuned for PyPI availability!
-
-.. todo:: Remove the above note if PyPI version is/will be available at time of release.
 
 On supported GNU/Linux systems like the Raspberry Pi, you can install the driver locally `from
 PyPI <https://pypi.org/project/adafruit-circuitpython-displayio-flipclock/>`_.
@@ -93,7 +88,7 @@ following command to install:
 
 .. code-block:: shell
 
-    circup install displayio_flipclock
+    circup install adafruit_displayio_flipclock
 
 Or the following command to update an existing version:
 
@@ -104,8 +99,70 @@ Or the following command to update an existing version:
 Usage Example
 =============
 
-.. todo:: Add a quick, simple example. It and other examples should live in the
-examples folder and be included in docs/examples.rst.
+.. code-block:: python
+
+    import time
+    from displayio import Group
+    import board
+    import adafruit_imageload
+    from adafruit_displayio_flipclock.flip_digit import FlipDigit
+
+
+    ANIMATION_DELAY = 0.02
+    ANIMATION_FRAME_COUNT = 10
+    TRANSPARENT_INDEXES = range(11)
+    BRIGHTER_LEVEL = 0.99
+    DARKER_LEVEL = 0.5
+    MEDIUM_LEVEL = 0.9
+
+    display = board.DISPLAY
+    main_group = Group()
+
+    static_spritesheet, static_palette = adafruit_imageload.load("static_sheet.bmp")
+    static_palette.make_transparent(0)
+
+    top_animation_spritesheet, top_animation_palette = adafruit_imageload.load(
+        "grey_top_animation_sheet.bmp"
+    )
+    bottom_animation_spritesheet, bottom_animation_palette = adafruit_imageload.load(
+        "grey_bottom_animation_sheet.bmp"
+    )
+
+    for i in TRANSPARENT_INDEXES:
+        top_animation_palette.make_transparent(i)
+        bottom_animation_palette.make_transparent(i)
+
+    SPRITE_WIDTH = static_spritesheet.width // 3
+    SPRITE_HEIGHT = (static_spritesheet.height // 4) // 2
+
+    flip_digit = FlipDigit(
+        static_spritesheet,
+        static_palette,
+        top_animation_spritesheet,
+        top_animation_palette,
+        bottom_animation_spritesheet,
+        bottom_animation_palette,
+        SPRITE_WIDTH,
+        SPRITE_HEIGHT,
+        anim_frame_count=ANIMATION_FRAME_COUNT,
+        anim_delay=ANIMATION_DELAY,
+        brighter_level=BRIGHTER_LEVEL,
+        darker_level=DARKER_LEVEL,
+        medium_level=MEDIUM_LEVEL,
+    )
+
+    flip_digit.anchor_point = (0.5, 0.5)
+    flip_digit.anchored_position = (display.width // 2, display.height // 2)
+
+    main_group.append(flip_digit)
+
+    display.show(main_group)
+
+    while True:
+        for i in range(10):
+            flip_digit.value = i
+            time.sleep(0.75)
+
 
 Documentation
 =============

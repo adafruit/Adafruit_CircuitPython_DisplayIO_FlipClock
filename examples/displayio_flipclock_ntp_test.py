@@ -1,15 +1,19 @@
 # SPDX-FileCopyrightText: Copyright (c) 2022 Tim Cocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
+"""
+Advanced example that shows how you can use the
+FlipClock displayio object along with the adafruit_ntp library
+to show and update the current time with a FlipClock on a display.
+"""
 
-
+import time
 import board
-import socketpool as socketpool
-import wifi as wifi
+import socketpool
+import wifi
 from displayio import Group
 import adafruit_imageload
 import adafruit_ntp
-import time
 from adafruit_displayio_flipclock.flip_clock import FlipClock
 
 # Get wifi details and more from a secrets.py file
@@ -36,22 +40,34 @@ display = board.DISPLAY
 static_spritesheet, static_palette = adafruit_imageload.load("static_sheet.bmp")
 static_palette.make_transparent(0)
 
-top_animation_spritesheet, top_animation_palette = adafruit_imageload.load("grey_top_animation_sheet.bmp")
-bottom_animation_spritesheet, bottom_animation_palette = adafruit_imageload.load("grey_bottom_animation_sheet.bmp")
+top_animation_spritesheet, top_animation_palette = adafruit_imageload.load(
+    "grey_top_animation_sheet.bmp"
+)
+bottom_animation_spritesheet, bottom_animation_palette = adafruit_imageload.load(
+    "grey_bottom_animation_sheet.bmp"
+)
 
 SPRITE_WIDTH = static_spritesheet.width // 3
 SPRITE_HEIGHT = (static_spritesheet.height // 4) // 2
 
 clock = FlipClock(
-    static_spritesheet, static_palette,
-    top_animation_spritesheet, top_animation_palette,
-    bottom_animation_spritesheet, bottom_animation_palette,
-    SPRITE_WIDTH, SPRITE_HEIGHT, anim_delay=ANIMATION_DELAY, transparent_indexes=TRANSPARENT_INDEXES,
-    brighter_level=BRIGHTER_LEVEL, darker_level=DARKER_LEVEL, medium_level=MEDIUM_LEVEL
+    static_spritesheet,
+    static_palette,
+    top_animation_spritesheet,
+    top_animation_palette,
+    bottom_animation_spritesheet,
+    bottom_animation_palette,
+    SPRITE_WIDTH,
+    SPRITE_HEIGHT,
+    anim_delay=ANIMATION_DELAY,
+    transparent_indexes=TRANSPARENT_INDEXES,
+    brighter_level=BRIGHTER_LEVEL,
+    darker_level=DARKER_LEVEL,
+    medium_level=MEDIUM_LEVEL,
 )
 
 clock.anchor_point = (0.5, 0.5)
-clock.anchored_position = (display.width//2, display.height//2)
+clock.anchored_position = (display.width // 2, display.height // 2)
 
 main_group = Group()
 main_group.append(clock)
