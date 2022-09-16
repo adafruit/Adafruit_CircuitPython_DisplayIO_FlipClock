@@ -8,3 +8,4 @@ adafruit-circuitpython-busdevice
 adafruit-circuitpython-register
 adafruit-displayio-layout
 cedargrove-palettefader
+pillow
