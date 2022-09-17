@@ -149,11 +149,11 @@ def make_sprite(
 
     inner_draw.rectangle(border_shape, outline=tile_color, fill=tile_color)
 
-    #w, h = inner_draw.textsize(character, font=fnt)
-    #print(f"w: {w}, h: {h}")
+    # w, h = inner_draw.textsize(character, font=fnt)
+    # print(f"w: {w}, h: {h}")
     bbox = inner_draw.textbbox((0, 0), character, font=fnt)
     w, h = bbox[2], bbox[3]
-    #print(bbox)
+    # print(bbox)
     inner_draw.text(
         (((inner_image_size[0] - w) // 2) + 1, ((inner_image_size[1] - h) // 2) + 1),
         character,
@@ -339,13 +339,15 @@ def make_animations_sheets(
         images=bottom_sprites,
         width=animation_frames,
         transparency_color=transparent_color,
+        tile_width=width
     )
     # bottom_sheet.save("test_bottom_sheet.png")
 
     bottom_sheet = bottom_sheet.convert(mode="P", palette=Palette.WEB)
     bottom_sheet.save("bottom_animation_sheet.bmp")
 
-    top_sheet = pack_images_to_sheet(images=top_sprites, width=animation_frames)
+    top_sheet = pack_images_to_sheet(images=top_sprites, width=animation_frames,
+                                     tile_width=width, transparency_color=transparent_color)
     top_sheet = top_sheet.convert(mode="P", palette=Palette.WEB)
     top_sheet.save("top_animation_sheet.bmp")
 
