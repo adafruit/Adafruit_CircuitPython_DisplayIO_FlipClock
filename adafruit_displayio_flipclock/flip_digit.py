@@ -252,12 +252,12 @@ class FlipDigit(Widget):
 
                 # set the first frame of the animation spritesheet into
                 # top animation tilegrid
-                self.top_anim_tilegrid[0] = new_value * 10
+                self.top_anim_tilegrid[0] = _old_value * self.anim_frame_count
 
                 # show the top animation tilegrid
                 self.top_anim_tilegrid.hidden = False
 
-                # set the top static tilegrid to it's new value
+                # set the top static tilegrid to its new value
                 # This is hidden behind the top animation tilegrid initially
                 self.top_static_tilegrid[0] = FlipDigit.TOP_HALF_SPRITE_INDEX_MAP[
                     new_value
@@ -277,7 +277,7 @@ class FlipDigit(Widget):
                 self.top_anim_tilegrid.hidden = True
 
                 # set the bottom animation tilegrid to it's new value
-                self.bottom_anim_tilegrid[0] = new_value * 10
+                self.bottom_anim_tilegrid[0] = new_value * self.anim_frame_count
 
                 # show the bottom animation tilegrid
                 self.bottom_anim_tilegrid.hidden = False
@@ -312,7 +312,7 @@ class FlipDigit(Widget):
         # loop over frame count
         for i in range(self.anim_frame_count):
             # set the top animation sprite to current animation frame sprite index
-            self.top_anim_tilegrid[0] = i + (value * 10)
+            self.top_anim_tilegrid[0] = i + (value * self.anim_frame_count)
 
             # sleep for delay
             time.sleep(self.anim_delay)
@@ -325,7 +325,7 @@ class FlipDigit(Widget):
         # loop over frame count
         for i in range(self.anim_frame_count):
             # set the bottom animation sprite to current animation frame sprite index
-            self.bottom_anim_tilegrid[0] = i + (value * 10)
+            self.bottom_anim_tilegrid[0] = i + (value * self.anim_frame_count)
 
             # sleep for delay
             time.sleep(self.anim_delay)

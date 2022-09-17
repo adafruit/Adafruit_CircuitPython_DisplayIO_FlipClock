@@ -12,6 +12,7 @@ import math
 from typing import Tuple, List
 from PIL import Image, ImageDraw, ImageFont
 import numpy
+from PIL.Image import Palette, Resampling, Transform
 
 DEFAULT_FONT = "LeagueSpartan-Regular.ttf"
 DEFAULT_FONT_SIZE = 44
@@ -67,7 +68,7 @@ def find_top_half_coeffs_inputs_for_angle(img: Image.Image, angle: int) -> Tuple
 
 
 def find_bottom_half_coeffs_inputs_for_angle(
-    img: Image.Image, angle: int
+        img: Image.Image, angle: int
 ) -> Tuple[List]:
     """
     Find the coefficient inputs for the bottom half of the image for a given angle.
@@ -113,15 +114,15 @@ def get_bottom_half(img: Image.Image) -> Image.Image:
 
 
 def make_sprite(
-    character: str,
-    font_size: int = 44,
-    font: str = DEFAULT_FONT,
-    padding: int = PADDING_SIZE,
-    width: int = TILE_WIDTH,
-    height: int = TILE_HEIGHT,
-    text_color: Tuple[int, int, int] = FONT_COLOR,
-    tile_color: Tuple[int, int, int] = TILE_COLOR,
-    transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+        character: str,
+        font_size: int = 44,
+        font: str = DEFAULT_FONT,
+        padding: int = PADDING_SIZE,
+        width: int = TILE_WIDTH,
+        height: int = TILE_HEIGHT,
+        text_color: Tuple[int, int, int] = FONT_COLOR,
+        tile_color: Tuple[int, int, int] = TILE_COLOR,
+        transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
 ) -> Image.Image:
     """
     Make a PIL Image object representing a single static digit (or character).
@@ -148,7 +149,11 @@ def make_sprite(
 
     inner_draw.rectangle(border_shape, outline=tile_color, fill=tile_color)
 
-    w, h = inner_draw.textsize(character, font=fnt)
+    #w, h = inner_draw.textsize(character, font=fnt)
+    #print(f"w: {w}, h: {h}")
+    bbox = inner_draw.textbbox((0, 0), character, font=fnt)
+    w, h = bbox[2], bbox[3]
+    #print(bbox)
     inner_draw.text(
         (((inner_image_size[0] - w) // 2) + 1, ((inner_image_size[1] - h) // 2) + 1),
         character,
@@ -164,7 +169,7 @@ def make_sprite(
 
 
 def make_angles_sprite_set(
-    img: Image.Image, count: int = 10, bottom_skew: bool = False
+        img: Image.Image, count: int = 10, bottom_skew: bool = False
 ) -> List[Image.Image]:
     """
     Generate angled sprites from a static sprite image.
@@ -192,7 +197,7 @@ def make_angles_sprite_set(
             )
 
         this_angle_img = img.transform(
-            (img.width, img.height), Image.PERSPECTIVE, coeffs, Image.BICUBIC
+            (img.width, img.height), Transform.PERSPECTIVE, coeffs, Resampling.BICUBIC
         )
 
         # this_angle_img.save(f"test_out/top_half_inner_{_angle + 1}.png")
@@ -206,14 +211,14 @@ def make_angles_sprite_set(
 
 
 def make_static_sheet(
-    font_size: int = DEFAULT_FONT_SIZE,
-    font: str = DEFAULT_FONT,
-    padding: int = PADDING_SIZE,
-    width: int = TILE_WIDTH,
-    height: int = TILE_HEIGHT,
-    text_color: Tuple[int, int, int] = FONT_COLOR,
-    tile_color: Tuple[int, int, int] = TILE_COLOR,
-    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+        font_size: int = DEFAULT_FONT_SIZE,
+        font: str = DEFAULT_FONT,
+        padding: int = PADDING_SIZE,
+        width: int = TILE_WIDTH,
+        height: int = TILE_HEIGHT,
+        text_color: Tuple[int, int, int] = FONT_COLOR,
+        tile_color: Tuple[int, int, int] = TILE_COLOR,
+        transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
 ) -> None:
     """
     Generate the spritesheet of static digit images. Outputs static sprite sheet
@@ -246,15 +251,15 @@ def make_static_sheet(
     # coords = (((10 % 3) * TILE_WIDTH), ((10 // 3) * TILE_HEIGHT))
     # full_sheet_img.paste(img, coords)
 
-    full_sheet_img = full_sheet_img.convert(mode="P", palette=Image.WEB)
+    full_sheet_img = full_sheet_img.convert(mode="P", palette=Palette.WEB)
     full_sheet_img.save("static_sheet.bmp")
 
 
 def pack_images_to_sheet(
-    images: List[Image.Image],
-    width: int,
-    transparency_color=TRANSPARENCY_COLOR,
-    tile_width: int = TILE_WIDTH,
+        images: List[Image.Image],
+        width: int,
+        transparency_color=TRANSPARENCY_COLOR,
+        tile_width: int = TILE_WIDTH,
 ) -> Image.Image:
     """
     Pack a list of PIL Image objects into a sprite sheet within
@@ -269,14 +274,14 @@ def pack_images_to_sheet(
 
     _img_width = images[0].width
     _img_height = images[0].height
-    #print(f"len: {len(images)} width:{width} img_w:{_img_width} img_h:{_img_height}")
+    # print(f"len: {len(images)} width:{width} img_w:{_img_width} img_h:{_img_height}")
     _sheet_img = Image.new(
         "RGBA", (_img_width * width, _img_height * row_count), color=transparency_color
     )
     # _sheet_img.save("before_things.bmp")
     for i, image in enumerate(images):
         coords = (((i % width) * tile_width), ((i // width) * image.height))
-        #print(coords)
+        # print(coords)
         _sheet_img.paste(image, coords, image)
         # image.save(f"test_out/img_{i}.png")
 
@@ -284,15 +289,15 @@ def pack_images_to_sheet(
 
 
 def make_animations_sheets(
-    font_size: int = DEFAULT_FONT_SIZE,
-    font: str = DEFAULT_FONT,
-    width: int = TILE_WIDTH,
-    height: int = TILE_HEIGHT,
-    padding: int = PADDING_SIZE,
-    text_color: Tuple[int, int, int] = FONT_COLOR,
-    tile_color: Tuple[int, int, int] = TILE_COLOR,
-    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
-    animation_frames: int = 10,
+        font_size: int = DEFAULT_FONT_SIZE,
+        font: str = DEFAULT_FONT,
+        width: int = TILE_WIDTH,
+        height: int = TILE_HEIGHT,
+        padding: int = PADDING_SIZE,
+        text_color: Tuple[int, int, int] = FONT_COLOR,
+        tile_color: Tuple[int, int, int] = TILE_COLOR,
+        transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+        animation_frames: int = 10,
 ) -> None:
     """
     Generate and save the top and bottom animation sprite sheets for the digits 0-9.
@@ -321,7 +326,7 @@ def make_animations_sheets(
         bottom_half = get_bottom_half(img)
 
         bottom_angled_sprites = make_angles_sprite_set(
-            bottom_half, 10, bottom_skew=True
+            bottom_half, animation_frames, bottom_skew=True
         )
         top_angled_sprites = make_angles_sprite_set(
             top_half, animation_frames, bottom_skew=False
@@ -337,26 +342,25 @@ def make_animations_sheets(
     )
     # bottom_sheet.save("test_bottom_sheet.png")
 
-    bottom_sheet = bottom_sheet.convert(mode="P", palette=Image.WEB)
+    bottom_sheet = bottom_sheet.convert(mode="P", palette=Palette.WEB)
     bottom_sheet.save("bottom_animation_sheet.bmp")
 
     top_sheet = pack_images_to_sheet(images=top_sprites, width=animation_frames)
-    top_sheet = top_sheet.convert(mode="P", palette=Image.WEB)
+    top_sheet = top_sheet.convert(mode="P", palette=Palette.WEB)
     top_sheet.save("top_animation_sheet.bmp")
 
 
 def main(
-    width: int = TILE_WIDTH,
-    height: int = TILE_HEIGHT,
-    padding: int = PADDING_SIZE,
-    text_color: Tuple[int, int, int] = FONT_COLOR,
-    tile_color: Tuple[int, int, int] = TILE_COLOR,
-    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
-    font: str = DEFAULT_FONT,
-    font_size: int = DEFAULT_FONT_SIZE,
-    animation_frames: int = 10,
+        width: int = TILE_WIDTH,
+        height: int = TILE_HEIGHT,
+        padding: int = PADDING_SIZE,
+        text_color: Tuple[int, int, int] = FONT_COLOR,
+        tile_color: Tuple[int, int, int] = TILE_COLOR,
+        transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+        font: str = DEFAULT_FONT,
+        font_size: int = DEFAULT_FONT_SIZE,
+        animation_frames: int = 10,
 ) -> None:
-
     make_static_sheet(
         font_size=font_size,
         font=font,
