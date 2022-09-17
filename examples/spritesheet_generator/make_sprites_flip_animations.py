@@ -20,7 +20,6 @@ TILE_COLOR = (90, 90, 90)
 FONT_COLOR = (255, 255, 255)
 PADDING_SIZE = 8
 TRANSPARENCY_COLOR = (0, 255, 0)
-BACKGROUND_COLOR = TRANSPARENCY_COLOR
 
 
 def find_coeffs(pa: Tuple, pb: Tuple) -> numpy.ndarray:
@@ -67,7 +66,9 @@ def find_top_half_coeffs_inputs_for_angle(img: Image.Image, angle: int) -> Tuple
     return first_list, second_list
 
 
-def find_bottom_half_coeffs_inputs_for_angle(img: Image.Image, angle: int) -> Tuple[List]:
+def find_bottom_half_coeffs_inputs_for_angle(
+    img: Image.Image, angle: int
+) -> Tuple[List]:
     """
     Find the coefficient inputs for the bottom half of the image for a given angle.
 
@@ -101,17 +102,27 @@ def get_top_half(img: Image.Image) -> Image.Image:
 
 def get_bottom_half(img: Image.Image) -> Image.Image:
     """
-       Return an Image object representing the bottom half of the input image
+    Return an Image object representing the bottom half of the input image
 
-       :param Image img: input image
+    :param Image img: input image
 
-       :returns Image: PIL Image object containing the bottom half of the input image
-       """
+    :returns Image: PIL Image object containing the bottom half of the input image
+    """
     bottom_half = img.crop((0, img.height // 2, img.width, img.height))
     return bottom_half
 
 
-def make_sprite(character: str, font_size: int = 44, font: str = DEFAULT_FONT) -> Image.Image:
+def make_sprite(
+    character: str,
+    font_size: int = 44,
+    font: str = DEFAULT_FONT,
+    padding: int = PADDING_SIZE,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+) -> Image.Image:
     """
     Make a PIL Image object representing a single static digit (or character).
     These get packed into the static sprite sheet, and are used as the basis
@@ -124,39 +135,37 @@ def make_sprite(character: str, font_size: int = 44, font: str = DEFAULT_FONT) -
 
     :returns Image: The PIL Image object containing a single static character sprite.
     """
-    border_rect_size = (TILE_WIDTH - PADDING_SIZE, TILE_HEIGHT - PADDING_SIZE)
-    # inner_image_size = (border_rect_size[0] + 1, border_rect_size[1] + 1)
-    inner_image_size = (TILE_WIDTH, TILE_HEIGHT)
-    border_shape = ((PADDING_SIZE, PADDING_SIZE), border_rect_size)
+    border_rect_size = (width - padding, height - padding)
+    inner_image_size = (width, height)
+    border_shape = ((padding, padding), border_rect_size)
 
     fnt = ImageFont.truetype(font, font_size)
-    img = Image.new("RGBA", (TILE_WIDTH, TILE_HEIGHT), color=BACKGROUND_COLOR)
+    img = Image.new("RGBA", (width, height), color=transparency_color)
 
-    # d = ImageDraw.Draw(img)
-
-    inner_img = Image.new("RGBA", inner_image_size, color=BACKGROUND_COLOR)
+    inner_img = Image.new("RGBA", inner_image_size, color=transparency_color)
 
     inner_draw = ImageDraw.Draw(inner_img)
-    # inner_draw.rectangle((0, 0, inner_image_size[0], inner_image_size[1]), fill=(100, 100, 200))
 
-    inner_draw.rectangle(border_shape, outline=TILE_COLOR, fill=TILE_COLOR)
+    inner_draw.rectangle(border_shape, outline=tile_color, fill=tile_color)
 
     w, h = inner_draw.textsize(character, font=fnt)
     inner_draw.text(
-        (((inner_image_size[0] - w) // 2) - 1, ((inner_image_size[1] - h) // 2) - 1),
+        (((inner_image_size[0] - w) // 2) + 1, ((inner_image_size[1] - h) // 2) + 1),
         character,
-        fill=FONT_COLOR,
+        fill=text_color,
         font=fnt,
     )
 
-    img.paste(inner_img, (PADDING_SIZE // 2, PADDING_SIZE // 2))
+    img.paste(inner_img, (padding // 2, padding // 2))
 
-    # inner_img.save("test_inner.png")
+    inner_img.save("test_inner.png")
 
     return inner_img
 
 
-def make_angles_sprite_set(img: Image.Image, count: int = 10, bottom_skew: bool = False) -> List[Image.Image]:
+def make_angles_sprite_set(
+    img: Image.Image, count: int = 10, bottom_skew: bool = False
+) -> List[Image.Image]:
     """
     Generate angled sprites from a static sprite image.
 
@@ -196,7 +205,16 @@ def make_angles_sprite_set(img: Image.Image, count: int = 10, bottom_skew: bool 
     return angled_sprites
 
 
-def make_static_sheet(font_size: int = 44, font: str = DEFAULT_FONT) -> None:
+def make_static_sheet(
+    font_size: int = DEFAULT_FONT_SIZE,
+    font: str = DEFAULT_FONT,
+    padding: int = PADDING_SIZE,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+) -> None:
     """
     Generate the spritesheet of static digit images. Outputs static sprite sheet
     file as "static_sheet.bmp"
@@ -206,26 +224,38 @@ def make_static_sheet(font_size: int = 44, font: str = DEFAULT_FONT) -> None:
      Must be otf, ttf, or other format supported by PIL.
 
     """
-    full_sheet_img = Image.new(
-        "RGBA", (TILE_WIDTH * 3, TILE_HEIGHT * 4), color=BACKGROUND_COLOR
-    )
+    full_sheet_img = Image.new("RGBA", (width * 3, height * 4), color=transparent_color)
 
     for i in range(10):
-        img = make_sprite(f"{i}", font_size=font_size, font=font)
+        img = make_sprite(
+            f"{i}",
+            font_size=font_size,
+            font=font,
+            padding=padding,
+            width=width,
+            height=height,
+            text_color=text_color,
+            tile_color=tile_color,
+        )
         # img.save(f'char_sprites/pil_text_{i}.png')
-        coords = (((i % 3) * TILE_WIDTH), ((i // 3) * TILE_HEIGHT))
+        coords = (((i % 3) * width), ((i // 3) * height))
         # print(coords)
         full_sheet_img.paste(img, coords)
 
-    img = make_sprite(":", font_size=font_size)
-    coords = (((10 % 3) * TILE_WIDTH), ((10 // 3) * TILE_HEIGHT))
-    full_sheet_img.paste(img, coords)
+    # img = make_sprite(":", font_size=font_size)
+    # coords = (((10 % 3) * TILE_WIDTH), ((10 // 3) * TILE_HEIGHT))
+    # full_sheet_img.paste(img, coords)
 
     full_sheet_img = full_sheet_img.convert(mode="P", palette=Image.WEB)
     full_sheet_img.save("static_sheet.bmp")
 
 
-def pack_images_to_sheet(images: List[Image.Image], width: int) -> Image.Image:
+def pack_images_to_sheet(
+    images: List[Image.Image],
+    width: int,
+    transparency_color=TRANSPARENCY_COLOR,
+    tile_width: int = TILE_WIDTH,
+) -> Image.Image:
     """
     Pack a list of PIL Image objects into a sprite sheet within
     another PIL Image object.
@@ -239,21 +269,31 @@ def pack_images_to_sheet(images: List[Image.Image], width: int) -> Image.Image:
 
     _img_width = images[0].width
     _img_height = images[0].height
-    print(f"len: {len(images)} width:{width} img_w:{_img_width} img_h:{_img_height}")
+    #print(f"len: {len(images)} width:{width} img_w:{_img_width} img_h:{_img_height}")
     _sheet_img = Image.new(
-        "RGBA", (_img_width * width, _img_height * row_count), color=TRANSPARENCY_COLOR
+        "RGBA", (_img_width * width, _img_height * row_count), color=transparency_color
     )
     # _sheet_img.save("before_things.bmp")
     for i, image in enumerate(images):
-        coords = (((i % width) * TILE_WIDTH), ((i // width) * image.height))
-        print(coords)
+        coords = (((i % width) * tile_width), ((i // width) * image.height))
+        #print(coords)
         _sheet_img.paste(image, coords, image)
         # image.save(f"test_out/img_{i}.png")
 
     return _sheet_img
 
 
-def make_animations_sheets(font_size: int = 44, font: str = DEFAULT_FONT) -> None:
+def make_animations_sheets(
+    font_size: int = DEFAULT_FONT_SIZE,
+    font: str = DEFAULT_FONT,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    padding: int = PADDING_SIZE,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    animation_frames: int = 10,
+) -> None:
     """
     Generate and save the top and bottom animation sprite sheets for the digits 0-9.
     Outputs the two spritesheets as "bottom_animation_sheet.bmp" and "top_animation_sheet.bmp"
@@ -266,42 +306,80 @@ def make_animations_sheets(font_size: int = 44, font: str = DEFAULT_FONT) -> Non
     top_sprites = []
 
     for i in range(10):
-        img = make_sprite(f"{i}", font_size=font_size, font=font)
+        img = make_sprite(
+            f"{i}",
+            font_size=font_size,
+            font=font,
+            padding=padding,
+            width=width,
+            height=height,
+            text_color=text_color,
+            tile_color=tile_color,
+        )
+
         top_half = get_top_half(img)
         bottom_half = get_bottom_half(img)
 
         bottom_angled_sprites = make_angles_sprite_set(
             bottom_half, 10, bottom_skew=True
         )
-        top_angled_sprites = make_angles_sprite_set(top_half, 10, bottom_skew=False)
+        top_angled_sprites = make_angles_sprite_set(
+            top_half, animation_frames, bottom_skew=False
+        )
 
         bottom_sprites.extend(bottom_angled_sprites)
         top_sprites.extend(top_angled_sprites)
 
-    bottom_sheet = pack_images_to_sheet(images=bottom_sprites, width=10)
+    bottom_sheet = pack_images_to_sheet(
+        images=bottom_sprites,
+        width=animation_frames,
+        transparency_color=transparent_color,
+    )
     # bottom_sheet.save("test_bottom_sheet.png")
 
     bottom_sheet = bottom_sheet.convert(mode="P", palette=Image.WEB)
     bottom_sheet.save("bottom_animation_sheet.bmp")
 
-    top_sheet = pack_images_to_sheet(images=top_sprites, width=10)
+    top_sheet = pack_images_to_sheet(images=top_sprites, width=animation_frames)
     top_sheet = top_sheet.convert(mode="P", palette=Image.WEB)
     top_sheet.save("top_animation_sheet.bmp")
 
 
-def main(width: int = TILE_WIDTH, height: int = TILE_HEIGHT, padding: int = PADDING_SIZE,
-         text_color: Tuple[int, int, int] = FONT_COLOR,
-         background_color: Tuple[int, int, int] = TILE_COLOR,
-         transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
-         font: str = DEFAULT_FONT, font_size: int = DEFAULT_FONT_SIZE,
-         animation_frames: int = 10) -> None:
-    make_static_sheet(font_size=font_size, font=font)
-    make_animations_sheets(font_size=font_size, font=font)
+def main(
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    padding: int = PADDING_SIZE,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    font: str = DEFAULT_FONT,
+    font_size: int = DEFAULT_FONT_SIZE,
+    animation_frames: int = 10,
+) -> None:
+
+    make_static_sheet(
+        font_size=font_size,
+        font=font,
+        padding=padding,
+        width=width,
+        height=height,
+        text_color=text_color,
+        tile_color=tile_color,
+        transparent_color=transparent_color,
+    )
+
+    make_animations_sheets(
+        font_size=font_size,
+        font=font,
+        padding=padding,
+        width=width,
+        height=height,
+        text_color=text_color,
+        tile_color=tile_color,
+        transparent_color=transparent_color,
+        animation_frames=animation_frames,
+    )
 
 
 if __name__ == "__main__":
     typer.run(main)
-
-# if __name__ == '__main__':
-#     make_static_sheet(font_size=44)
-#     make_animations_sheets(font_size=44)
