@@ -111,7 +111,7 @@ class FlipDigit(Widget):
         tile_height: int,
         anim_frame_count: int = 10,
         anim_delay: float = 0.02,
-        dynamic_fading: bool = False,
+        dynamic_fading: bool = True,
         brighter_level: float = 0.85,
         darker_level: float = 0.6,
         medium_level: float = 0.8,

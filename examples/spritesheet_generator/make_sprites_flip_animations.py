@@ -7,12 +7,13 @@ Command line script to generate flip clock spritesheet Bitmap image files.
 
 """
 
-import typer
 import math
+
 from typing import Tuple, List
-from PIL import Image, ImageDraw, ImageFont
 import numpy
+from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Palette, Resampling, Transform
+import typer
 
 DEFAULT_FONT = "LeagueSpartan-Regular.ttf"
 DEFAULT_FONT_SIZE = 44
@@ -21,6 +22,8 @@ TILE_COLOR = (90, 90, 90)
 FONT_COLOR = (255, 255, 255)
 PADDING_SIZE = 8
 TRANSPARENCY_COLOR = (0, 255, 0)
+
+# pylint: disable=too-many-arguments, too-many-locals
 
 
 def find_coeffs(pa: Tuple, pb: Tuple) -> numpy.ndarray:
@@ -68,7 +71,7 @@ def find_top_half_coeffs_inputs_for_angle(img: Image.Image, angle: int) -> Tuple
 
 
 def find_bottom_half_coeffs_inputs_for_angle(
-        img: Image.Image, angle: int
+    img: Image.Image, angle: int
 ) -> Tuple[List]:
     """
     Find the coefficient inputs for the bottom half of the image for a given angle.
@@ -114,15 +117,15 @@ def get_bottom_half(img: Image.Image) -> Image.Image:
 
 
 def make_sprite(
-        character: str,
-        font_size: int = 44,
-        font: str = DEFAULT_FONT,
-        padding: int = PADDING_SIZE,
-        width: int = TILE_WIDTH,
-        height: int = TILE_HEIGHT,
-        text_color: Tuple[int, int, int] = FONT_COLOR,
-        tile_color: Tuple[int, int, int] = TILE_COLOR,
-        transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    character: str,
+    font_size: int = 44,
+    font: str = DEFAULT_FONT,
+    padding: int = PADDING_SIZE,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
 ) -> Image.Image:
     """
     Make a PIL Image object representing a single static digit (or character).
@@ -133,6 +136,19 @@ def make_sprite(
     :param int font_size: The size to render the font on the the sprite
     :param str font: The filename of the font to render the character in.
       Filetype must be otf, ttf, or other font formats supported by PIL.
+    :param int width: The width in pixels of each tile
+    :param int height: The height in pixels of each tile
+    :param int padding: The number of pixels padding around all sides. This will be filled with
+      the transparent color so displayio won't show it if initialized properly. The padding space
+      is used in the perspective animation frames to "poke out" into for the
+      visual effect of appearing bigger / closer.
+    :param tuple text_color: The color of the digit text in each tile.
+      Tuple containing RGB color values 0-255 for each color.
+    :param tuple tile_color: The color of the tile the digit is on.
+      Tuple containing RGB color values 0-255 for each color.
+    :param tuple transparency_color: The color to use for transparency. displayio.Palette
+      must call make_transparent() with the indexes represented by this color.
+      Tuple containing RGB color values 0-255 for each color.
 
     :returns Image: The PIL Image object containing a single static character sprite.
     """
@@ -169,7 +185,7 @@ def make_sprite(
 
 
 def make_angles_sprite_set(
-        img: Image.Image, count: int = 10, bottom_skew: bool = False
+    img: Image.Image, count: int = 10, bottom_skew: bool = False
 ) -> List[Image.Image]:
     """
     Generate angled sprites from a static sprite image.
@@ -211,14 +227,14 @@ def make_angles_sprite_set(
 
 
 def make_static_sheet(
-        font_size: int = DEFAULT_FONT_SIZE,
-        font: str = DEFAULT_FONT,
-        padding: int = PADDING_SIZE,
-        width: int = TILE_WIDTH,
-        height: int = TILE_HEIGHT,
-        text_color: Tuple[int, int, int] = FONT_COLOR,
-        tile_color: Tuple[int, int, int] = TILE_COLOR,
-        transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    font_size: int = DEFAULT_FONT_SIZE,
+    font: str = DEFAULT_FONT,
+    padding: int = PADDING_SIZE,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
 ) -> None:
     """
     Generate the spritesheet of static digit images. Outputs static sprite sheet
@@ -226,10 +242,25 @@ def make_static_sheet(
 
     :param int font_size: the font size to render the text on the sprites at
     :param str font: the filename of the font to render the text in.
-     Must be otf, ttf, or other format supported by PIL.
+      Must be otf, ttf, or other format supported by PIL.
+    :param int width: The width in pixels of each tile
+    :param int height: The height in pixels of each tile
+    :param int padding: The number of pixels padding around all sides. This will be filled with
+      the transparent color so displayio won't show it if initialized properly. The padding space
+      is used in the perspective animation frames to "poke out" into for the
+      visual effect of appearing bigger / closer.
+    :param tuple text_color: The color of the digit text in each tile.
+      Tuple containing RGB color values 0-255 for each color.
+    :param tuple tile_color: The color of the tile the digit is on.
+      Tuple containing RGB color values 0-255 for each color.
+    :param tuple transparency_color: The color to use for transparency. displayio.Palette
+      must call make_transparent() with the indexes represented by this color.
+      Tuple containing RGB color values 0-255 for each color.
 
     """
-    full_sheet_img = Image.new("RGBA", (width * 3, height * 4), color=transparent_color)
+    full_sheet_img = Image.new(
+        "RGBA", (width * 3, height * 4), color=transparency_color
+    )
 
     for i in range(10):
         img = make_sprite(
@@ -256,10 +287,10 @@ def make_static_sheet(
 
 
 def pack_images_to_sheet(
-        images: List[Image.Image],
-        width: int,
-        transparency_color=TRANSPARENCY_COLOR,
-        tile_width: int = TILE_WIDTH,
+    images: List[Image.Image],
+    width: int,
+    transparency_color=TRANSPARENCY_COLOR,
+    tile_width: int = TILE_WIDTH,
 ) -> Image.Image:
     """
     Pack a list of PIL Image objects into a sprite sheet within
@@ -267,6 +298,10 @@ def pack_images_to_sheet(
 
     :param List[Image] images: A list of Image objects to pack into the sheet
     :param int width: The number of sprites in each row
+    :param tuple transparency_color: The color to use for transparency. displayio.Palette
+      must call make_transparent() with the indexes represented by this color.
+      Tuple containing RGB color values 0-255 for each color.
+    :param int tile_width: The width in pixels of each tile that will be in the sheet.
 
     :returns Image: PIL Image object containing the packed sprite sheet
     """
@@ -289,15 +324,15 @@ def pack_images_to_sheet(
 
 
 def make_animations_sheets(
-        font_size: int = DEFAULT_FONT_SIZE,
-        font: str = DEFAULT_FONT,
-        width: int = TILE_WIDTH,
-        height: int = TILE_HEIGHT,
-        padding: int = PADDING_SIZE,
-        text_color: Tuple[int, int, int] = FONT_COLOR,
-        tile_color: Tuple[int, int, int] = TILE_COLOR,
-        transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
-        animation_frames: int = 10,
+    font_size: int = DEFAULT_FONT_SIZE,
+    font: str = DEFAULT_FONT,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    padding: int = PADDING_SIZE,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    animation_frames: int = 10,
 ) -> None:
     """
     Generate and save the top and bottom animation sprite sheets for the digits 0-9.
@@ -305,7 +340,21 @@ def make_animations_sheets(
 
     :param int font_size: the font size to render the text on the sprites at
     :param str font: the filename of the font to render the text in.
-     Must be otf, ttf, or other format supported by PIL.
+      Must be otf, ttf, or other format supported by PIL.
+    :param int width: The width in pixels of each tile
+    :param int height: The height in pixels of each tile
+    :param int padding: The number of pixels padding around all sides. This will be filled with
+      the transparent color so displayio won't show it if initialized properly. The padding space
+      is used in the perspective animation frames to "poke out" into for the
+      visual effect of appearing bigger / closer.
+    :param tuple text_color: The color of the digit text in each tile.
+      Tuple containing RGB color values 0-255 for each color.
+    :param tuple tile_color: The color of the tile the digit is on.
+      Tuple containing RGB color values 0-255 for each color.
+    :param tuple transparency_color: The color to use for transparency. displayio.Palette
+      must call make_transparent() with the indexes represented by this color.
+      Tuple containing RGB color values 0-255 for each color.
+    :param animation_frames: The number of frames to use for the flip animations.
     """
     bottom_sprites = []
     top_sprites = []
@@ -338,30 +387,34 @@ def make_animations_sheets(
     bottom_sheet = pack_images_to_sheet(
         images=bottom_sprites,
         width=animation_frames,
-        transparency_color=transparent_color,
-        tile_width=width
+        transparency_color=transparency_color,
+        tile_width=width,
     )
     # bottom_sheet.save("test_bottom_sheet.png")
 
     bottom_sheet = bottom_sheet.convert(mode="P", palette=Palette.WEB)
     bottom_sheet.save("bottom_animation_sheet.bmp")
 
-    top_sheet = pack_images_to_sheet(images=top_sprites, width=animation_frames,
-                                     tile_width=width, transparency_color=transparent_color)
+    top_sheet = pack_images_to_sheet(
+        images=top_sprites,
+        width=animation_frames,
+        tile_width=width,
+        transparency_color=transparency_color,
+    )
     top_sheet = top_sheet.convert(mode="P", palette=Palette.WEB)
     top_sheet.save("top_animation_sheet.bmp")
 
 
 def main(
-        width: int = TILE_WIDTH,
-        height: int = TILE_HEIGHT,
-        padding: int = PADDING_SIZE,
-        text_color: Tuple[int, int, int] = FONT_COLOR,
-        tile_color: Tuple[int, int, int] = TILE_COLOR,
-        transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
-        font: str = DEFAULT_FONT,
-        font_size: int = DEFAULT_FONT_SIZE,
-        animation_frames: int = 10,
+    width: int = TILE_WIDTH,
+    height: int = TILE_HEIGHT,
+    padding: int = PADDING_SIZE,
+    text_color: Tuple[int, int, int] = FONT_COLOR,
+    tile_color: Tuple[int, int, int] = TILE_COLOR,
+    transparent_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    font: str = DEFAULT_FONT,
+    font_size: int = DEFAULT_FONT_SIZE,
+    animation_frames: int = 10,
 ) -> None:
     make_static_sheet(
         font_size=font_size,
@@ -371,7 +424,7 @@ def main(
         height=height,
         text_color=text_color,
         tile_color=tile_color,
-        transparent_color=transparent_color,
+        transparency_color=transparent_color,
     )
 
     make_animations_sheets(
@@ -382,7 +435,7 @@ def main(
         height=height,
         text_color=text_color,
         tile_color=tile_color,
-        transparent_color=transparent_color,
+        transparency_color=transparent_color,
         animation_frames=animation_frames,
     )
 

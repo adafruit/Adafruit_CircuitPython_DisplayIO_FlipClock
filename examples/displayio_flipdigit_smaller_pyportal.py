@@ -45,13 +45,13 @@ static_spritesheet, static_palette = adafruit_imageload.load("static_sheet_small
 static_palette.make_transparent(0)
 
 gc.collect()
-print(gc.mem_free())
+# print(gc.mem_free())
 # load the animation sprite sheets
 top_animation_spritesheet, top_animation_palette = adafruit_imageload.load(
     "top_animation_sheet_small_5frames.bmp"
 )
 gc.collect()
-print(gc.mem_free())
+# print(gc.mem_free())
 bottom_animation_spritesheet, bottom_animation_palette = adafruit_imageload.load(
     "bottom_animation_sheet_small_5frames.bmp"
 )
@@ -98,11 +98,9 @@ main_group.append(flip_digit)
 display.show(main_group)
 
 
-
 while True:
     # loop over values 0-9
     for i in range(10):
         # update the value in the flip digit
         flip_digit.value = i
         time.sleep(0.75)
-    pass
