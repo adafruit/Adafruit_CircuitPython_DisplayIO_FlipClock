@@ -9,7 +9,7 @@ Command line script to generate flip clock spritesheet Bitmap image files.
 
 import math
 
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 import numpy
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Palette, Resampling, Transform
@@ -22,6 +22,8 @@ TILE_COLOR = (90, 90, 90)
 FONT_COLOR = (255, 255, 255)
 PADDING_SIZE = 8
 TRANSPARENCY_COLOR = (0, 255, 0)
+CENTER_LINE_HEIGHT = 1  # px
+
 
 # pylint: disable=too-many-arguments, too-many-locals
 
@@ -126,6 +128,8 @@ def make_sprite(
     text_color: Tuple[int, int, int] = FONT_COLOR,
     tile_color: Tuple[int, int, int] = TILE_COLOR,
     transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    text_y_offset: int = 0,
+    center_line_color: Optional[Tuple[int, int, int]] = None,
 ) -> Image.Image:
     """
     Make a PIL Image object representing a single static digit (or character).
@@ -149,12 +153,19 @@ def make_sprite(
     :param tuple transparency_color: The color to use for transparency. displayio.Palette
       must call make_transparent() with the indexes represented by this color.
       Tuple containing RGB color values 0-255 for each color.
+    :param tuple center_line_color: The color to draw the center horizontal line.
+      None for no line.
+
 
     :returns Image: The PIL Image object containing a single static character sprite.
     """
     border_rect_size = (width - padding, height - padding)
     inner_image_size = (width, height)
     border_shape = ((padding, padding), border_rect_size)
+    center_line_shape = (
+        (padding, height // 2 - CENTER_LINE_HEIGHT // 2),
+        (border_rect_size[0], height // 2 + CENTER_LINE_HEIGHT // 2),
+    )
 
     fnt = ImageFont.truetype(font, font_size)
     img = Image.new("RGBA", (width, height), color=transparency_color)
@@ -171,15 +182,22 @@ def make_sprite(
     w, h = bbox[2], bbox[3]
     # print(bbox)
     inner_draw.text(
-        (((inner_image_size[0] - w) // 2) + 1, ((inner_image_size[1] - h) // 2) + 1),
+        (
+            ((inner_image_size[0] - w) // 2) + 1,
+            ((inner_image_size[1] - h) // 2) + 1 + text_y_offset,
+        ),
         character,
         fill=text_color,
         font=fnt,
     )
+    if center_line_color:
+        inner_draw.rectangle(
+            center_line_shape, outline=center_line_color, fill=center_line_color
+        )
 
     img.paste(inner_img, (padding // 2, padding // 2))
 
-    inner_img.save("test_inner.png")
+    # inner_img.save("test_inner.png")
 
     return inner_img
 
@@ -235,6 +253,8 @@ def make_static_sheet(
     text_color: Tuple[int, int, int] = FONT_COLOR,
     tile_color: Tuple[int, int, int] = TILE_COLOR,
     transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
+    text_y_offset: int = 0,
+    center_line_color: Optional[Tuple[int, int, int]] = None,
 ) -> None:
     """
     Generate the spritesheet of static digit images. Outputs static sprite sheet
@@ -256,6 +276,8 @@ def make_static_sheet(
     :param tuple transparency_color: The color to use for transparency. displayio.Palette
       must call make_transparent() with the indexes represented by this color.
       Tuple containing RGB color values 0-255 for each color.
+    :param int text_y_offset: Amount to shift the text placement verticaly.
+      Positive numbers move it down, negative move it up.
 
     """
     full_sheet_img = Image.new(
@@ -272,6 +294,8 @@ def make_static_sheet(
             height=height,
             text_color=text_color,
             tile_color=tile_color,
+            text_y_offset=text_y_offset,
+            center_line_color=center_line_color,
         )
         # img.save(f'char_sprites/pil_text_{i}.png')
         coords = (((i % 3) * width), ((i // 3) * height))
@@ -333,6 +357,8 @@ def make_animations_sheets(
     tile_color: Tuple[int, int, int] = TILE_COLOR,
     transparency_color: Tuple[int, int, int] = TRANSPARENCY_COLOR,
     animation_frames: int = 10,
+    text_y_offset: int = 0,
+    center_line_color: Optional[Tuple[int, int, int]] = None,
 ) -> None:
     """
     Generate and save the top and bottom animation sprite sheets for the digits 0-9.
@@ -355,6 +381,8 @@ def make_animations_sheets(
       must call make_transparent() with the indexes represented by this color.
       Tuple containing RGB color values 0-255 for each color.
     :param animation_frames: The number of frames to use for the flip animations.
+    :param int text_y_offset: Amount to shift the text placement verticaly.
+      Positive numbers move it down, negative move it up.
     """
     bottom_sprites = []
     top_sprites = []
@@ -369,6 +397,8 @@ def make_animations_sheets(
             height=height,
             text_color=text_color,
             tile_color=tile_color,
+            text_y_offset=text_y_offset,
+            center_line_color=center_line_color,
         )
 
         top_half = get_top_half(img)
@@ -415,7 +445,10 @@ def main(
     font: str = DEFAULT_FONT,
     font_size: int = DEFAULT_FONT_SIZE,
     animation_frames: int = 10,
+    text_y_offset: int = 0,
+    center_line_color: Optional[Tuple[int, int, int]] = None,
 ) -> None:
+    print(center_line_color)
     make_static_sheet(
         font_size=font_size,
         font=font,
@@ -425,6 +458,8 @@ def main(
         text_color=text_color,
         tile_color=tile_color,
         transparency_color=transparent_color,
+        text_y_offset=text_y_offset,
+        center_line_color=center_line_color,
     )
 
     make_animations_sheets(
@@ -437,6 +472,8 @@ def main(
         tile_color=tile_color,
         transparency_color=transparent_color,
         animation_frames=animation_frames,
+        text_y_offset=text_y_offset,
+        center_line_color=center_line_color,
     )
 
 

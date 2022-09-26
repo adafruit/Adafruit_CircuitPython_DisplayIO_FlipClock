@@ -59,7 +59,7 @@ class FlipDigit(Widget):
     :param float anim_delay: Time in seconds to wait between animation frames.
       Default value is 0.02 seconds
     :param bool dynamic_fading: Whether to use PaleteFadder to dynamically adjust brightness.
-    :param float brighter_lebel: Brightness modifier value to use for the brightest
+    :param float brighter_level: Brightness modifier value to use for the brightest
       portion of the aniatmions. Valid range is 0.0 - 1.0.
     :param float medium_level: Brightness modifier value to use for the standard
       portion of the aniatmions. And the static digit sprites. Valid range is 0.0 - 1.0.

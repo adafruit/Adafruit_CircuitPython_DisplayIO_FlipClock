@@ -63,7 +63,7 @@ class FlipClock(Widget):
     :param int colon_color: Hex color value to draw the colon between pairs of digits.
       Default is white 0xffffff.
     :param bool dynamic_fading: Whether to use PaleteFadder to dynamically adjust brightness.
-    :param float brighter_lebel: Brightness modifier value to use for the brightest portion
+    :param float brighter_level: Brightness modifier value to use for the brightest portion
       of the aniatmions. Valid range is 0.0 - 1.0.
     :param float medium_level: Brightness modifier value to use for the standard
       portion of the aniatmions. Valid range is 0.0 - 1.0.
