@@ -190,7 +190,7 @@ def make_sprite(
         fill=text_color,
         font=fnt,
     )
-    if center_line_color:
+    if center_line_color and not center_line_color == (None, None, None):
         inner_draw.rectangle(
             center_line_shape, outline=center_line_color, fill=center_line_color
         )
@@ -446,9 +446,11 @@ def main(
     font_size: int = DEFAULT_FONT_SIZE,
     animation_frames: int = 10,
     text_y_offset: int = 0,
-    center_line_color: Optional[Tuple[int, int, int]] = None,
+    center_line_color: Optional[Tuple[int, int, int]] = typer.Option(
+        (None, None, None)
+    ),
 ) -> None:
-    print(center_line_color)
+    # print(center_line_color)
     make_static_sheet(
         font_size=font_size,
         font=font,
