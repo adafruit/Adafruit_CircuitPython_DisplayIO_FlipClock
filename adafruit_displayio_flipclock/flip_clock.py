@@ -64,11 +64,11 @@ class FlipClock(Widget):
       Default is white 0xffffff.
     :param bool dynamic_fading: Whether to use PaleteFadder to dynamically adjust brightness.
     :param float brighter_level: Brightness modifier value to use for the brightest portion
-      of the aniatmions. Valid range is 0.0 - 1.0.
+      of the animations. Valid range is 0.0 - 1.0.
     :param float medium_level: Brightness modifier value to use for the standard
-      portion of the aniatmions. Valid range is 0.0 - 1.0.
+      portion of the animations. Valid range is 0.0 - 1.0.
     :param float darker_level: Brightness modifier value to use for the darkest "shadow" portion
-      of the aniatmions. Valid range is 0.0 - 1.0.
+      of the animations. Valid range is 0.0 - 1.0.
     """
 
     # pylint: disable=too-many-instance-attributes, too-many-arguments, too-many-locals
