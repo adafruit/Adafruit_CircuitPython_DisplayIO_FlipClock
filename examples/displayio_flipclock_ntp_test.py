@@ -65,7 +65,7 @@ clock = FlipClock(
     SPRITE_WIDTH,
     SPRITE_HEIGHT,
     anim_delay=ANIMATION_DELAY,
-#    transparent_indexes=TRANSPARENT_INDEXES,
+    #    transparent_indexes=TRANSPARENT_INDEXES,
     brighter_level=BRIGHTER_LEVEL,
     darker_level=DARKER_LEVEL,
     medium_level=MEDIUM_LEVEL,
