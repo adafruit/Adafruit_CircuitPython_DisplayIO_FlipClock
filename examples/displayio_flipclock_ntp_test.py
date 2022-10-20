@@ -47,6 +47,11 @@ bottom_animation_spritesheet, bottom_animation_palette = adafruit_imageload.load
     "grey_bottom_animation_sheet.bmp"
 )
 
+# set the transparent color indexes in respective palettes
+for i in TRANSPARENT_INDEXES:
+    top_animation_palette.make_transparent(i)
+    bottom_animation_palette.make_transparent(i)
+
 SPRITE_WIDTH = static_spritesheet.width // 3
 SPRITE_HEIGHT = (static_spritesheet.height // 4) // 2
 
@@ -60,7 +65,7 @@ clock = FlipClock(
     SPRITE_WIDTH,
     SPRITE_HEIGHT,
     anim_delay=ANIMATION_DELAY,
-    transparent_indexes=TRANSPARENT_INDEXES,
+    #    transparent_indexes=TRANSPARENT_INDEXES,
     brighter_level=BRIGHTER_LEVEL,
     darker_level=DARKER_LEVEL,
     medium_level=MEDIUM_LEVEL,
