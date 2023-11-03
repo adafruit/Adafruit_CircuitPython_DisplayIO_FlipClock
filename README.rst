@@ -156,7 +156,7 @@ Usage Example
 
     main_group.append(flip_digit)
 
-    display.show(main_group)
+    display.root_group = main_group
 
     while True:
         for i in range(10):

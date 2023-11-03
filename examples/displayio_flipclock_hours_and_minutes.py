@@ -88,7 +88,7 @@ main_group = Group()
 main_group.append(clock)
 
 # show the group on the display
-board.DISPLAY.show(main_group)
+board.DISPLAY.root_group = main_group
 
 # variables to store hours and minutes values
 cur_hour = clock.first_pair

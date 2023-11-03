@@ -76,7 +76,7 @@ clock.anchored_position = (display.width // 2, display.height // 2)
 
 main_group = Group()
 main_group.append(clock)
-board.DISPLAY.show(main_group)
+board.DISPLAY.root_group = main_group
 
 while True:
     try:

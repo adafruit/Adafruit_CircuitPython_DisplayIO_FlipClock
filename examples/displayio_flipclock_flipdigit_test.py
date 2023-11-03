@@ -85,7 +85,7 @@ flip_digit.anchored_position = (display.width // 2, display.height // 2)
 main_group.append(flip_digit)
 
 # show the group on the display
-display.show(main_group)
+display.root_group = main_group
 
 while True:
     # loop over values 0-9
