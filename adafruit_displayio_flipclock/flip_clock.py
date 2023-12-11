@@ -91,7 +91,6 @@ class FlipClock(Widget):
         darker_level: float = 0.6,
         medium_level: float = 0.8,
     ) -> None:
-
         # initialize parent Widget object
         super().__init__(
             width=tile_width * 4 + COLON_SPACE,

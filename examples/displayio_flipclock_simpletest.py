@@ -92,7 +92,6 @@ board.DISPLAY.root_group = main_group
 clock.first_pair = "13"
 
 while True:
-
     # increment first pair number
     cur_val = clock.first_pair
     next_val = int(cur_val) + 1

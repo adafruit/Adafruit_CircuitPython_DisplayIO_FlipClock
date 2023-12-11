@@ -116,7 +116,6 @@ class FlipDigit(Widget):
         darker_level: float = 0.6,
         medium_level: float = 0.8,
     ) -> None:
-
         # initialize parent Widget object
         super().__init__(width=tile_width, height=tile_height * 2)
 
@@ -236,14 +235,12 @@ class FlipDigit(Widget):
         """
         # ignore new_value if it's the same as current
         if new_value != self.value:
-
             # if the new value is valid
             if (
                 isinstance(new_value, int)
                 and 0 <= new_value <= 9
                 and new_value in FlipDigit.VALID_CHARACTERS
             ):
-
                 # store current value to use later
                 _old_value = self.value
 
