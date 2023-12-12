@@ -122,7 +122,6 @@ while True:
         clock.first_pair = str(next_hour)
 
     else:  # not ready to wrap minutes yet
-
         # set minute value on the flip clock
         clock.second_pair = str(next_minute)
     time.sleep(0.1)
