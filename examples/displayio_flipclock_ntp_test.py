@@ -7,6 +7,7 @@ FlipClock displayio object along with the adafruit_ntp library
 to show and update the current time with a FlipClock on a display.
 """
 
+from os import getenv
 import time
 import board
 import socketpool
@@ -16,12 +17,9 @@ import adafruit_imageload
 import adafruit_ntp
 from adafruit_displayio_flipclock.flip_clock import FlipClock
 
-# Get wifi details and more from a secrets.py file
-try:
-    from secrets import secrets
-except ImportError:
-    print("WiFi secrets are kept in secrets.py, please add them there!")
-    raise
+# Get WiFi details, ensure these are setup in settings.toml
+ssid = getenv("CIRCUITPY_WIFI_SSID")
+password = getenv("CIRCUITPY_WIFI_PASSWORD")
 
 ANIMATION_DELAY = 0.01
 TRANSPARENT_INDEXES = range(11)
@@ -30,7 +28,7 @@ DARKER_LEVEL = 0.5
 MEDIUM_LEVEL = 0.9
 UTC_OFFSET = -5
 
-wifi.radio.connect(secrets["ssid"], secrets["password"])
+wifi.radio.connect(ssid, password)
 pool = socketpool.SocketPool(wifi.radio)
 ntp = adafruit_ntp.NTP(pool, tz_offset=UTC_OFFSET)
 
