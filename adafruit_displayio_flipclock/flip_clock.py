@@ -23,15 +23,18 @@ Implementation Notes
 * Adafruit CircuitPython firmware for the supported boards:
   https://circuitpython.org/downloads
 """
+
 try:
     from typing import Optional
+
     from displayio import Bitmap
 except ImportError:
     pass
 
 from adafruit_displayio_layout.widgets.widget import Widget
-from displayio import Palette  # pylint: disable=ungrouped-imports
+from displayio import Palette
 from vectorio import Circle
+
 from adafruit_displayio_flipclock.flip_digit import FlipDigit
 
 # Gap in pixels that the colon will be shown in between the two pairs
@@ -70,8 +73,6 @@ class FlipClock(Widget):
     :param float darker_level: Brightness modifier value to use for the darkest "shadow" portion
       of the animations. Valid range is 0.0 - 1.0.
     """
-
-    # pylint: disable=too-many-instance-attributes, too-many-arguments, too-many-locals
 
     def __init__(
         self,
@@ -204,12 +205,8 @@ class FlipClock(Widget):
         bottom_dot_y = (self.tile_height * 2 // 3) * 2
 
         # create circles for colon
-        top_circle = Circle(
-            pixel_shader=colon_palette, radius=4, x=colon_x, y=top_dot_y
-        )
-        bottom_circle = Circle(
-            pixel_shader=colon_palette, radius=4, x=colon_x, y=bottom_dot_y
-        )
+        top_circle = Circle(pixel_shader=colon_palette, radius=4, x=colon_x, y=top_dot_y)
+        bottom_circle = Circle(pixel_shader=colon_palette, radius=4, x=colon_x, y=bottom_dot_y)
 
         # add the colon circles to parent Group
         self.append(top_circle)
@@ -228,7 +225,7 @@ class FlipClock(Widget):
         """
 
         # validate type and length
-        if not isinstance(new_pair, str) or not len(new_pair) in (1, 2):
+        if not isinstance(new_pair, str) or len(new_pair) != 1 and len(new_pair) != 2:
             raise ValueError("Pair Value must be str with length 2")
 
         # if the new value is length 1

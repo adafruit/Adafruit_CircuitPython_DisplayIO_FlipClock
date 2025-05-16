@@ -7,10 +7,13 @@ An example that shows how to initialize and use the FlipClock displayio object.
 This example is the most basic usage of FlipClock and is not intended to count
 time or any other specific units or values.
 """
+
 import time
+
+import adafruit_imageload
 import board
 from displayio import Group
-import adafruit_imageload
+
 from adafruit_displayio_flipclock.flip_clock import FlipClock
 
 #  == Configuration Variables ==

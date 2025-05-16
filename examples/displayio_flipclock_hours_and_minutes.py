@@ -9,10 +9,13 @@ Note that it's not counting at realtime speed, and it doesn't
 know the current hour/minute. This example is only showing the logic
 needed to count time with the FlipClock
 """
+
 import time
+
+import adafruit_imageload
 import board
 from displayio import Group
-import adafruit_imageload
+
 from adafruit_displayio_flipclock.flip_clock import FlipClock
 
 #  == Configuration Variables ==

@@ -7,14 +7,16 @@ FlipClock displayio object along with the adafruit_ntp library
 to show and update the current time with a FlipClock on a display.
 """
 
-from os import getenv
 import time
+from os import getenv
+
+import adafruit_imageload
+import adafruit_ntp
 import board
 import socketpool
 import wifi
 from displayio import Group
-import adafruit_imageload
-import adafruit_ntp
+
 from adafruit_displayio_flipclock.flip_clock import FlipClock
 
 # Get WiFi details, ensure these are setup in settings.toml

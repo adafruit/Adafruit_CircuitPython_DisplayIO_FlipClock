@@ -25,13 +25,15 @@ Implementation Notes
 """
 
 try:
-    from typing import Optional  # pylint: disable=unused-import
+    from typing import Optional
+
     from displayio import Bitmap
 except ImportError:
     pass
 import time
+
 from adafruit_displayio_layout.widgets.widget import Widget
-from displayio import TileGrid, Palette  # pylint: disable=ungrouped-imports
+from displayio import Palette, TileGrid
 
 
 class FlipDigit(Widget):
@@ -66,8 +68,6 @@ class FlipDigit(Widget):
     :param float darker_level: Brightness modifier value to use for the
       darkest "shadow" portion of the animations. Valid range is 0.0 - 1.0.
     """
-
-    # pylint: disable=too-many-instance-attributes, too-many-arguments, too-many-locals
 
     # all characters that are valid
     VALID_CHARACTERS = (0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9)
@@ -125,20 +125,13 @@ class FlipDigit(Widget):
         bottom_palette = None
         top_palette = None
         if dynamic_fading:
-            # pylint: disable=import-outside-toplevel
             from cedargrove_palettefader import (
                 PaletteFader,
             )
 
-            self.static_fader = PaletteFader(
-                static_spritesheet_palette, medium_level, 1.0
-            )
-            self.darker_static_fader = PaletteFader(
-                static_spritesheet_palette, darker_level, 1.0
-            )
-            self.bottom_anim_fader = PaletteFader(
-                bottom_anim_palette, brighter_level, 1.0
-            )
+            self.static_fader = PaletteFader(static_spritesheet_palette, medium_level, 1.0)
+            self.darker_static_fader = PaletteFader(static_spritesheet_palette, darker_level, 1.0)
+            self.bottom_anim_fader = PaletteFader(bottom_anim_palette, brighter_level, 1.0)
             self.top_anim_fader = PaletteFader(top_anim_palette, darker_level, 1.0)
             static_palette = self.static_fader.palette
             bottom_palette = self.bottom_anim_fader.palette
@@ -256,16 +249,12 @@ class FlipDigit(Widget):
 
                 # set the top static tilegrid to its new value
                 # This is hidden behind the top animation tilegrid initially
-                self.top_static_tilegrid[0] = FlipDigit.TOP_HALF_SPRITE_INDEX_MAP[
-                    new_value
-                ]
+                self.top_static_tilegrid[0] = FlipDigit.TOP_HALF_SPRITE_INDEX_MAP[new_value]
 
                 # if dynamic fading is enabled
                 if self.dynamic_fading:
                     # set the bottom static tilegrid to use the darker color palette
-                    self.bottom_static_tilegrid.pixel_shader = (
-                        self.darker_static_fader.palette
-                    )
+                    self.bottom_static_tilegrid.pixel_shader = self.darker_static_fader.palette
 
                 # Run the top half flip animation
                 self.top_flip_animate(value=_old_value)
@@ -283,9 +272,7 @@ class FlipDigit(Widget):
                 self.bottom_flip_animate(value=new_value)
 
                 # set the bottom static tilegrid to new value sprite index
-                self.bottom_static_tilegrid[0] = FlipDigit.BOTTOM_HALF_SPRITE_INDEX_MAP[
-                    new_value
-                ]
+                self.bottom_static_tilegrid[0] = FlipDigit.BOTTOM_HALF_SPRITE_INDEX_MAP[new_value]
 
                 # hide the bottom animation tilegrid
                 # which reveals the bottom static tilegrid
