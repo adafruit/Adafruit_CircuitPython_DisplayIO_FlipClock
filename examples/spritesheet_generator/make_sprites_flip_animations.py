@@ -8,12 +8,12 @@ Command line script to generate flip clock spritesheet Bitmap image files.
 """
 
 import math
+from typing import List, Optional, Tuple
 
-from typing import Tuple, List, Optional
 import numpy
+import typer
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Palette, Resampling, Transform
-import typer
 
 DEFAULT_FONT = "LeagueSpartan-Regular.ttf"
 DEFAULT_FONT_SIZE = 44
@@ -23,9 +23,6 @@ FONT_COLOR = (255, 255, 255)
 PADDING_SIZE = 8
 TRANSPARENCY_COLOR = (0, 255, 0)
 CENTER_LINE_HEIGHT = 1  # px
-
-
-# pylint: disable=too-many-arguments, too-many-locals
 
 
 def find_coeffs(pa: Tuple, pb: Tuple) -> numpy.ndarray:
@@ -72,9 +69,7 @@ def find_top_half_coeffs_inputs_for_angle(img: Image.Image, angle: int) -> Tuple
     return first_list, second_list
 
 
-def find_bottom_half_coeffs_inputs_for_angle(
-    img: Image.Image, angle: int
-) -> Tuple[List]:
+def find_bottom_half_coeffs_inputs_for_angle(img: Image.Image, angle: int) -> Tuple[List]:
     """
     Find the coefficient inputs for the bottom half of the image for a given angle.
 
@@ -191,9 +186,7 @@ def make_sprite(
         font=fnt,
     )
     if center_line_color and not center_line_color == (None, None, None):
-        inner_draw.rectangle(
-            center_line_shape, outline=center_line_color, fill=center_line_color
-        )
+        inner_draw.rectangle(center_line_shape, outline=center_line_color, fill=center_line_color)
 
     img.paste(inner_img, (padding // 2, padding // 2))
 
@@ -222,13 +215,9 @@ def make_angles_sprite_set(
     for _, _angle in enumerate(range(0, 91, angle_count_by)):
         # print(f"angle: {_angle}")
         if bottom_skew:
-            coeffs = find_coeffs(
-                *find_bottom_half_coeffs_inputs_for_angle(img, _angle + 1)
-            )
+            coeffs = find_coeffs(*find_bottom_half_coeffs_inputs_for_angle(img, _angle + 1))
         else:  # top skew:
-            coeffs = find_coeffs(
-                *find_top_half_coeffs_inputs_for_angle(img, _angle + 1)
-            )
+            coeffs = find_coeffs(*find_top_half_coeffs_inputs_for_angle(img, _angle + 1))
 
         this_angle_img = img.transform(
             (img.width, img.height), Transform.PERSPECTIVE, coeffs, Resampling.BICUBIC
@@ -280,9 +269,7 @@ def make_static_sheet(
       Positive numbers move it down, negative move it up.
 
     """
-    full_sheet_img = Image.new(
-        "RGBA", (width * 3, height * 4), color=transparency_color
-    )
+    full_sheet_img = Image.new("RGBA", (width * 3, height * 4), color=transparency_color)
 
     for i in range(10):
         img = make_sprite(
@@ -407,9 +394,7 @@ def make_animations_sheets(
         bottom_angled_sprites = make_angles_sprite_set(
             bottom_half, animation_frames, bottom_skew=True
         )
-        top_angled_sprites = make_angles_sprite_set(
-            top_half, animation_frames, bottom_skew=False
-        )
+        top_angled_sprites = make_angles_sprite_set(top_half, animation_frames, bottom_skew=False)
 
         bottom_sprites.extend(bottom_angled_sprites)
         top_sprites.extend(top_angled_sprites)
@@ -446,9 +431,7 @@ def main(
     font_size: int = DEFAULT_FONT_SIZE,
     animation_frames: int = 10,
     text_y_offset: int = 0,
-    center_line_color: Optional[Tuple[int, int, int]] = typer.Option(
-        (None, None, None)
-    ),
+    center_line_color: Optional[Tuple[int, int, int]] = typer.Option((None, None, None)),
 ) -> None:
     # print(center_line_color)
     make_static_sheet(

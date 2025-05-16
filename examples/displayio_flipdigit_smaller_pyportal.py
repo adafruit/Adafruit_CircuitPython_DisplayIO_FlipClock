@@ -4,13 +4,15 @@
 """
 Most basic example showing how to initialize and use the FlipDigit displayio object.
 """
+
 import gc
 import time
-from displayio import Group
-import board
-import adafruit_imageload
-from adafruit_displayio_flipclock.flip_digit import FlipDigit
 
+import adafruit_imageload
+import board
+from displayio import Group
+
+from adafruit_displayio_flipclock.flip_digit import FlipDigit
 
 #  == Configuration Variables ==
 
