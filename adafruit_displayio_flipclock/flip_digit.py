@@ -125,9 +125,7 @@ class FlipDigit(Widget):
         bottom_palette = None
         top_palette = None
         if dynamic_fading:
-            from cedargrove_palettefader import (
-                PaletteFader,
-            )
+            from cedargrove_palettefader.palettefader import PaletteFader
 
             self.static_fader = PaletteFader(static_spritesheet_palette, medium_level, 1.0)
             self.darker_static_fader = PaletteFader(static_spritesheet_palette, darker_level, 1.0)
